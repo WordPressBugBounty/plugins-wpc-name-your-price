@@ -3,24 +3,27 @@
 Plugin Name: WPC Name Your Price for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Name Your Price lets customers pay with what price they want.
-Version: 2.1.4
+Version: 2.1.5
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
 Domain Path: /languages/
 Requires Plugins: woocommerce
 Requires at least: 4.0
-Tested up to: 6.6
+Tested up to: 6.7
 WC requires at least: 3.0
-WC tested up to: 9.2
+WC tested up to: 9.4
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.1.4' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.1.5' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
+! defined( 'WOONP_DIR' ) && define( 'WOONP_DIR', plugin_dir_path( __FILE__ ) );
 ! defined( 'WOONP_REVIEWS' ) && define( 'WOONP_REVIEWS', 'https://wordpress.org/support/plugin/wpc-name-your-price/reviews/?filter=5' );
 ! defined( 'WOONP_CHANGELOG' ) && define( 'WOONP_CHANGELOG', 'https://wordpress.org/plugins/wpc-name-your-price/#developers' );
 ! defined( 'WOONP_DISCUSSION' ) && define( 'WOONP_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-name-your-price' );
@@ -34,9 +37,6 @@ if ( ! function_exists( 'woonp_init' ) ) {
 	add_action( 'plugins_loaded', 'woonp_init', 11 );
 
 	function woonp_init() {
-		// load text-domain
-		load_plugin_textdomain( 'wpc-name-your-price', false, basename( __DIR__ ) . '/languages/' );
-
 		if ( ! function_exists( 'WC' ) || ! version_compare( WC()->version, '3.0', '>=' ) ) {
 			add_action( 'admin_notices', 'woonp_notice_wc' );
 
@@ -59,6 +59,9 @@ if ( ! function_exists( 'woonp_init' ) ) {
 				}
 
 				function __construct() {
+					// init
+					add_action( 'init', [ $this, 'init' ] );
+
 					// enqueue backend
 					add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 
@@ -77,6 +80,11 @@ if ( ! function_exists( 'woonp_init' ) ) {
 					add_filter( 'woocommerce_product_data_tabs', [ $this, 'product_data_tabs' ] );
 					add_action( 'woocommerce_product_data_panels', [ $this, 'product_data_panels' ] );
 					add_action( 'woocommerce_process_product_meta', [ $this, 'process_product_meta' ] );
+				}
+
+				function init() {
+					// load text-domain
+					load_plugin_textdomain( 'wpc-name-your-price', false, basename( WOONP_DIR ) . '/languages/' );
 				}
 
 				function admin_enqueue_scripts() {
