@@ -3,7 +3,7 @@
 Plugin Name: WPC Name Your Price for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Name Your Price lets customers pay with what price they want.
-Version: 2.1.5
+Version: 2.1.6
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
@@ -12,14 +12,14 @@ Requires Plugins: woocommerce
 Requires at least: 4.0
 Tested up to: 6.7
 WC requires at least: 3.0
-WC tested up to: 9.4
+WC tested up to: 9.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.1.5' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.1.6' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );

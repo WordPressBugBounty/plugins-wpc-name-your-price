@@ -1,15 +1,15 @@
-# Copyright (C) 2024 WPClever
+# Copyright (C) 2025 WPClever
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPC Name Your Price for WooCommerce 2.1.5\n"
+"Project-Id-Version: WPC Name Your Price for WooCommerce 2.1.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-name-your-price\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-12-12T08:39:42+00:00\n"
+"POT-Creation-Date: 2025-02-03T15:16:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: wpc-name-your-price\n"

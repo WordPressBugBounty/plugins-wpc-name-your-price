@@ -40,7 +40,7 @@ class WoonpCore {
 				continue;
 			}
 
-			$cart_item['data']->set_price( $cart_item['woonp'] );
+			$cart_item['data']->set_price( apply_filters( 'woonp_cart_item_price', $cart_item['woonp'], $cart_item ) );
 		}
 
 		return $cart_contents;
