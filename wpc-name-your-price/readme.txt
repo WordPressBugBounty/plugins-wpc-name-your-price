@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, name price, open price, custom price
 Tested up to: 6.7
-Version: 2.1.6
-Stable tag: 2.1.6
+Version: 2.1.7
+Stable tag: 2.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,10 @@ Please try other plugins from us:
 4. Go to WPClever > Name Your Price to make your customization
 
 == Changelog ==
+
+= 2.1.7 =
+* Updated: Optimized the code
+* Updated: Compatible with WP 6.7 & Woo 9.7
 
 = 2.1.6 =
 * Added: Filter hook 'woonp_cart_item_price'
