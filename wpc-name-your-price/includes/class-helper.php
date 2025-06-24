@@ -29,7 +29,7 @@ class WoonpHelper {
 		if ( ! empty( self::$settings ) && isset( self::$settings[ $name ] ) ) {
 			$setting = self::$settings[ $name ];
 		} else {
-			$setting = get_option( '_woonp_' . $name, $default );
+			$setting = get_option( 'woonp_' . $name, $default );
 		}
 
 		return apply_filters( 'woonp_get_setting', $setting, $name, $default );

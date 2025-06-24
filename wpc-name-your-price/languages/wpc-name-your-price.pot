@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPC Name Your Price for WooCommerce 2.1.7\n"
+"Project-Id-Version: WPC Name Your Price for WooCommerce 2.1.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-name-your-price\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-02T04:57:29+00:00\n"
+"POT-Creation-Date: 2025-06-24T01:42:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: wpc-name-your-price\n"
@@ -41,13 +41,13 @@ msgstr ""
 
 #. translators: price
 #: includes/class-core.php:61
-#: wpc-name-your-price.php:186
+#: wpc-name-your-price.php:195
 msgid "Suggested Price: %s"
 msgstr ""
 
 #. translators: currency
 #: includes/class-core.php:147
-#: wpc-name-your-price.php:222
+#: wpc-name-your-price.php:231
 msgid "Name Your Price (%s) "
 msgstr ""
 
@@ -60,206 +60,206 @@ msgid "Invalid price. Please try again!"
 msgstr ""
 
 #: wpc-name-your-price.php:112
-#: wpc-name-your-price.php:123
+#: wpc-name-your-price.php:127
 msgid "WPC Name Your Price"
 msgstr ""
 
 #: wpc-name-your-price.php:113
-#: wpc-name-your-price.php:360
-#: wpc-name-your-price.php:395
+#: wpc-name-your-price.php:369
+#: wpc-name-your-price.php:404
 msgid "Name Your Price"
 msgstr ""
 
 #. translators: stars
-#: wpc-name-your-price.php:126
+#: wpc-name-your-price.php:130
 msgid "Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating."
 msgstr ""
 
-#: wpc-name-your-price.php:130
+#: wpc-name-your-price.php:134
 msgid "Reviews"
 msgstr ""
 
-#: wpc-name-your-price.php:132
+#: wpc-name-your-price.php:137
 msgid "Changelog"
 msgstr ""
 
-#: wpc-name-your-price.php:134
+#: wpc-name-your-price.php:140
 msgid "Discussion"
 msgstr ""
 
-#: wpc-name-your-price.php:139
+#: wpc-name-your-price.php:148
 msgid "Settings updated."
 msgstr ""
 
-#: wpc-name-your-price.php:146
-#: wpc-name-your-price.php:333
+#: wpc-name-your-price.php:155
+#: wpc-name-your-price.php:342
 msgid "Settings"
 msgstr ""
 
-#: wpc-name-your-price.php:150
+#: wpc-name-your-price.php:159
 msgid "Essential Kit"
 msgstr ""
 
-#: wpc-name-your-price.php:167
+#: wpc-name-your-price.php:176
 msgid "General"
 msgstr ""
 
-#: wpc-name-your-price.php:172
+#: wpc-name-your-price.php:181
 msgid "Status"
 msgstr ""
 
-#: wpc-name-your-price.php:175
+#: wpc-name-your-price.php:184
 msgid "Enable"
 msgstr ""
 
-#: wpc-name-your-price.php:176
-#: wpc-name-your-price.php:407
+#: wpc-name-your-price.php:185
+#: wpc-name-your-price.php:416
 msgid "Disable"
 msgstr ""
 
-#: wpc-name-your-price.php:178
+#: wpc-name-your-price.php:187
 msgid "You still can enable/disable it on a product basis."
 msgstr ""
 
-#: wpc-name-your-price.php:182
+#: wpc-name-your-price.php:191
 msgid "Suggested price"
 msgstr ""
 
 #. translators: price
-#: wpc-name-your-price.php:188
+#: wpc-name-your-price.php:197
 msgid "Use General tab's price as suggested price, leave blank to hide. Use \"%s\" for price."
 msgstr ""
 
-#: wpc-name-your-price.php:192
+#: wpc-name-your-price.php:201
 msgid "Add to cart button"
 msgstr ""
 
-#: wpc-name-your-price.php:195
+#: wpc-name-your-price.php:204
 msgid "Show"
 msgstr ""
 
-#: wpc-name-your-price.php:196
+#: wpc-name-your-price.php:205
 msgid "Hide"
 msgstr ""
 
-#: wpc-name-your-price.php:198
+#: wpc-name-your-price.php:207
 msgid "Show/hide add to cart button on the shop/archive page."
 msgstr ""
 
-#: wpc-name-your-price.php:202
+#: wpc-name-your-price.php:211
 msgid "Rounding values"
 msgstr ""
 
-#: wpc-name-your-price.php:205
+#: wpc-name-your-price.php:214
 msgid "Down"
 msgstr ""
 
-#: wpc-name-your-price.php:206
+#: wpc-name-your-price.php:215
 msgid "Up"
 msgstr ""
 
-#: wpc-name-your-price.php:208
+#: wpc-name-your-price.php:217
 msgid "Round the amount to the nearest bigger (up) or smaller (down) value when an invalid number is inputted."
 msgstr ""
 
-#: wpc-name-your-price.php:213
+#: wpc-name-your-price.php:222
 msgid "Price input"
 msgstr ""
 
-#: wpc-name-your-price.php:218
+#: wpc-name-your-price.php:227
 msgid "Label"
 msgstr ""
 
 #. translators: currency
-#: wpc-name-your-price.php:224
+#: wpc-name-your-price.php:233
 msgid "Use \"%s\" for currency."
 msgstr ""
 
-#: wpc-name-your-price.php:228
+#: wpc-name-your-price.php:237
 msgid "Default value"
 msgstr ""
 
-#: wpc-name-your-price.php:231
+#: wpc-name-your-price.php:240
 msgid "Product price"
 msgstr ""
 
-#: wpc-name-your-price.php:232
+#: wpc-name-your-price.php:241
 msgid "Min value"
 msgstr ""
 
-#: wpc-name-your-price.php:233
+#: wpc-name-your-price.php:242
 msgid "Max value"
 msgstr ""
 
-#: wpc-name-your-price.php:234
-msgid "Empty"
-msgstr ""
-
-#: wpc-name-your-price.php:239
-#: wpc-name-your-price.php:418
-msgid "Type"
-msgstr ""
-
-#: wpc-name-your-price.php:242
-#: wpc-name-your-price.php:421
-msgid "Input (default)"
-msgstr ""
-
 #: wpc-name-your-price.php:243
-#: wpc-name-your-price.php:422
-msgid "Select"
+msgid "Empty"
 msgstr ""
 
 #: wpc-name-your-price.php:248
 #: wpc-name-your-price.php:427
+msgid "Type"
+msgstr ""
+
+#: wpc-name-your-price.php:251
+#: wpc-name-your-price.php:430
+msgid "Input (default)"
+msgstr ""
+
+#: wpc-name-your-price.php:252
+#: wpc-name-your-price.php:431
+msgid "Select"
+msgstr ""
+
+#: wpc-name-your-price.php:257
+#: wpc-name-your-price.php:436
 msgid "Minimum"
 msgstr ""
 
-#: wpc-name-your-price.php:255
-#: wpc-name-your-price.php:266
-#: wpc-name-your-price.php:277
-#: wpc-name-your-price.php:434
-#: wpc-name-your-price.php:445
-#: wpc-name-your-price.php:456
+#: wpc-name-your-price.php:264
+#: wpc-name-your-price.php:275
+#: wpc-name-your-price.php:286
+#: wpc-name-your-price.php:443
+#: wpc-name-your-price.php:454
+#: wpc-name-your-price.php:465
 msgid "Leave blank or zero to disable."
 msgstr ""
 
-#: wpc-name-your-price.php:259
-#: wpc-name-your-price.php:438
+#: wpc-name-your-price.php:268
+#: wpc-name-your-price.php:447
 msgid "Step"
 msgstr ""
 
-#: wpc-name-your-price.php:270
-#: wpc-name-your-price.php:449
+#: wpc-name-your-price.php:279
+#: wpc-name-your-price.php:458
 msgid "Maximum"
 msgstr ""
 
-#: wpc-name-your-price.php:281
-#: wpc-name-your-price.php:460
+#: wpc-name-your-price.php:290
+#: wpc-name-your-price.php:469
 msgid "Values"
 msgstr ""
 
-#: wpc-name-your-price.php:288
-#: wpc-name-your-price.php:467
+#: wpc-name-your-price.php:297
+#: wpc-name-your-price.php:476
 msgid "Enter each value in one line and can use the range e.g \"10-20\"."
 msgstr ""
 
-#: wpc-name-your-price.php:349
+#: wpc-name-your-price.php:358
 msgid "Community support"
 msgstr ""
 
-#: wpc-name-your-price.php:383
+#: wpc-name-your-price.php:392
 msgid "Product wasn't returned."
 msgstr ""
 
-#: wpc-name-your-price.php:401
+#: wpc-name-your-price.php:410
 msgid "Default"
 msgstr ""
 
-#: wpc-name-your-price.php:403
+#: wpc-name-your-price.php:412
 msgid "settings"
 msgstr ""
 
-#: wpc-name-your-price.php:411
+#: wpc-name-your-price.php:420
 msgid "Overwrite"
 msgstr ""
