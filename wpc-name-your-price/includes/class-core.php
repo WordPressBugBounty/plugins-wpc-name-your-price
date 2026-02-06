@@ -36,7 +36,7 @@ class WoonpCore {
 
 	public function get_cart_contents( $cart_contents ) {
 		foreach ( $cart_contents as $cart_item ) {
-			if ( ! isset( $cart_item['woonp'] ) ) {
+			if ( ! isset( $cart_item['woonp'] ) || ! self::is_valid_product( $cart_item['data'] ) ) {
 				continue;
 			}
 
@@ -47,135 +47,130 @@ class WoonpCore {
 	}
 
 	public function hide_original_price( $price, $product ) {
-		if ( is_admin() ) {
+		if ( is_admin() || ! self::is_valid_product( $product ) ) {
 			return $price;
 		}
 
-		$product_id    = $product->get_id();
-		$get_post_meta = get_post_meta( $product_id, '_woonp_status', true );
+		$suggested_price = apply_filters( 'woonp_suggested_price', WoonpHelper::get_setting( 'suggested_price', /* translators: price */ esc_html__( 'Suggested Price: %s', 'wpc-name-your-price' ) ), $product );
 
-		if (
-			( WoonpHelper::get_setting( 'global_status', 'enable' ) === 'enable' && $get_post_meta !== 'disable' ) ||
-			( WoonpHelper::get_setting( 'global_status', 'enable' ) === 'disable' && $get_post_meta === 'overwrite' )
-		) {
-			$suggested_price = apply_filters( 'woonp_suggested_price', WoonpHelper::get_setting( 'suggested_price', /* translators: price */ esc_html__( 'Suggested Price: %s', 'wpc-name-your-price' ) ), $product_id );
-
-			return sprintf( $suggested_price, $price );
-		}
-
-		return $price;
+		return sprintf( $suggested_price, $price );
 	}
 
 	function loop_add_to_cart_link( $link, $product ) {
-		$product_id    = $product->get_id();
-		$get_post_meta = get_post_meta( $product_id, '_woonp_status', true );
-
-		if ( ( WoonpHelper::get_setting( 'atc_button', 'show' ) === 'hide' ) &&
-		     ( ( WoonpHelper::get_setting( 'global_status', 'enable' ) === 'enable' && $get_post_meta !== 'disable' ) ||
-		       ( WoonpHelper::get_setting( 'global_status', 'enable' ) === 'disable' && $get_post_meta === 'overwrite' ) )
-		) {
+		if ( WoonpHelper::get_setting( 'atc_button', 'show' ) === 'hide' && self::is_valid_product( $product ) ) {
 			return '';
 		}
 
 		return $link;
 	}
 
-	public static function is_woonp_product() {
-		global $product;
-
-		if ( $product->is_type( 'variation' ) && $product->get_parent_id() ) {
-			$product_id = $product->get_parent_id();
-		} else {
-			$product_id = $product->get_id();
+	public static function is_valid_product( $product = null ) {
+		if ( ! $product ) {
+			global $product;
 		}
 
-		$status = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
+		if ( is_numeric( $product ) ) {
+			$product = wc_get_product( $product );
+		}
 
-		return ( $status !== 'disable' );
+		if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
+			return false;
+		}
+
+		$product_id    = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+		$global_status = WoonpHelper::get_setting( 'global_status', 'enable' );
+		$status        = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
+
+		if ( ( $status === 'overwrite' ) || ( $status === 'default' && $global_status !== 'disable' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static function add_input_field() {
 		global $product;
 
-		if ( self::is_woonp_product() ) {
-			// $status !== 'disable'
-			$product_id    = $product->get_id();
-			$global_status = WoonpHelper::get_setting( 'global_status', 'enable' );
-			$status        = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
-			$type          = $min = $max = $step = $values = '';
-
-			if ( $status === 'overwrite' ) {
-				$global_status = 'enable';
-				$type          = get_post_meta( $product_id, '_woonp_type', true );
-				$min           = get_post_meta( $product_id, '_woonp_min', true );
-				$max           = get_post_meta( $product_id, '_woonp_max', true );
-				$step          = get_post_meta( $product_id, '_woonp_step', true );
-				$values        = get_post_meta( $product_id, '_woonp_values', true );
-			}
-
-			if ( $status === 'default' ) {
-				$type   = WoonpHelper::get_setting( 'type', 'default' );
-				$min    = WoonpHelper::get_setting( 'min' );
-				$max    = WoonpHelper::get_setting( 'max' );
-				$step   = WoonpHelper::get_setting( 'step' );
-				$values = WoonpHelper::get_setting( 'values' );
-			}
-
-			if ( $global_status === 'disable' ) {
-				return;
-			}
-
-			switch ( WoonpHelper::get_setting( 'value', 'price' ) ) {
-				case 'price':
-					$value = self::sanitize_price( $product->get_price() );
-					break;
-				case 'min':
-					$value = self::sanitize_price( $min );
-					break;
-				case 'max':
-					$value = self::sanitize_price( $max );
-					break;
-				default:
-					$value = '';
-			}
-
-			if ( is_product() && isset( $_REQUEST['woonp'] ) ) {
-				$value = self::sanitize_price( $_REQUEST['woonp'] );
-			}
-
-			$input_id    = 'woonp_' . $product_id;
-			$input_label = apply_filters( 'woonp_input_label', WoonpHelper::get_setting( 'label', /* translators: currency */ esc_html__( 'Name Your Price (%s) ', 'wpc-name-your-price' ) ), $product_id );
-			$label       = sprintf( $input_label, get_woocommerce_currency_symbol() );
-			$price       = '<div class="' . esc_attr( apply_filters( 'woonp_input_class', 'woonp woonp-' . $status . ' woonp-type-' . $type, $product ) ) . '" data-min="' . esc_attr( $min ) . '" data-max="' . esc_attr( $max ) . '" data-step="' . esc_attr( $step ) . '">';
-			$price       .= '<label for="' . esc_attr( $input_id ) . '">' . esc_html( $label ) . '</label>';
-
-			if ( ( $type === 'select' ) && ( $values = WPCleverWoonp::get_values( $values ) ) && ! empty( $values ) ) {
-				// select
-				$select = '<select id="' . esc_attr( $input_id ) . '" class="woonp-select" name="woonp">';
-
-				foreach ( $values as $v ) {
-					$select .= '<option value="' . esc_attr( $v['value'] ) . '" ' . ( $value == $v['value'] ? 'selected' : '' ) . '>' . $v['name'] . '</option>';
-				}
-
-				$select .= '</select>';
-
-				$price .= apply_filters( 'woonp_input_select', $select, $product );
-			} else {
-				// default
-				$input = '<input type="number" id="' . esc_attr( $input_id ) . '" class="woonp-input" step="' . esc_attr( $step ) . '" min="' . esc_attr( $min ) . '" max="' . esc_attr( 0 < $max ? $max : '' ) . '" name="woonp" value="' . esc_attr( $value ) . '" size="4"/>';
-
-				$price .= apply_filters( 'woonp_input_number', $input, $product );
-			}
-
-			$price .= '</div>';
-
-			echo apply_filters( 'woonp_input', $price, $product );
+		if ( ! self::is_valid_product( $product ) ) {
+			return;
 		}
+
+		$product_id = $product->get_id();
+		$status     = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
+		$type       = $min = $max = $step = $values = '';
+
+		if ( $status === 'overwrite' ) {
+			$type   = get_post_meta( $product_id, '_woonp_type', true );
+			$min    = get_post_meta( $product_id, '_woonp_min', true );
+			$max    = get_post_meta( $product_id, '_woonp_max', true );
+			$step   = get_post_meta( $product_id, '_woonp_step', true );
+			$values = get_post_meta( $product_id, '_woonp_values', true );
+		}
+
+		if ( $status === 'default' ) {
+			$type   = WoonpHelper::get_setting( 'type', 'default' );
+			$min    = WoonpHelper::get_setting( 'min' );
+			$max    = WoonpHelper::get_setting( 'max' );
+			$step   = WoonpHelper::get_setting( 'step' );
+			$values = WoonpHelper::get_setting( 'values' );
+		}
+
+		switch ( WoonpHelper::get_setting( 'value', 'price' ) ) {
+			case 'price':
+				$value = self::sanitize_price( $product->get_price() );
+				break;
+			case 'min':
+				$value = self::sanitize_price( $min );
+				break;
+			case 'max':
+				$value = self::sanitize_price( $max );
+				break;
+			default:
+				$value = '';
+		}
+
+		if ( is_product() && isset( $_REQUEST['woonp'] ) ) {
+			$value = self::sanitize_price( $_REQUEST['woonp'] );
+		}
+
+		$input_id    = 'woonp_' . $product_id;
+		$input_label = apply_filters( 'woonp_input_label', WoonpHelper::get_setting( 'label', /* translators: currency */ esc_html__( 'Name Your Price (%s) ', 'wpc-name-your-price' ) ), $product_id );
+		$label       = sprintf( $input_label, get_woocommerce_currency_symbol() );
+		$price       = '<div class="' . esc_attr( apply_filters( 'woonp_input_class', 'woonp woonp-' . $status . ' woonp-type-' . $type, $product ) ) . '" data-min="' . esc_attr( $min ) . '" data-max="' . esc_attr( $max ) . '" data-step="' . esc_attr( $step ) . '">';
+		$price       .= '<label for="' . esc_attr( $input_id ) . '">' . esc_html( $label ) . '</label>';
+
+		if ( ( $type === 'select' ) && ( $values = WPCleverWoonp::get_values( $values ) ) && ! empty( $values ) ) {
+			// select
+			$select = '<select id="' . esc_attr( $input_id ) . '" class="woonp-select" name="woonp">';
+
+			foreach ( $values as $v ) {
+				$select .= '<option value="' . esc_attr( $v['value'] ) . '" ' . ( $value == $v['value'] ? 'selected' : '' ) . '>' . $v['name'] . '</option>';
+			}
+
+			$select .= '</select>';
+
+			$price .= apply_filters( 'woonp_input_select', $select, $product );
+		} else {
+			// default
+			$input = '<input type="number" id="' . esc_attr( $input_id ) . '" class="woonp-input" step="' . esc_attr( $step ) . '" min="' . esc_attr( $min ) . '" max="' . esc_attr( 0 < $max ? $max : '' ) . '" name="woonp" value="' . esc_attr( $value ) . '" size="4"/>';
+
+			$price .= apply_filters( 'woonp_input_number', $input, $product );
+		}
+
+		$price .= '</div>';
+
+		echo apply_filters( 'woonp_input', $price, $product );
 	}
 
 	public static function add_to_cart_validation( $passed, $product_id ) {
 		if ( isset( $_REQUEST['woonp'] ) ) {
 			$price = self::sanitize_price( $_REQUEST['woonp'] );
+
+			if ( ! self::is_valid_product( $product_id ) ) {
+				wc_add_notice( esc_html__( 'This product does not allow you to name your price.', 'wpc-name-your-price' ), 'error' );
+
+				return false;
+			}
 
 			if ( $price < 0 ) {
 				wc_add_notice( esc_html__( 'You can\'t fill the negative price.', 'wpc-name-your-price' ), 'error' );
