@@ -3,7 +3,7 @@
 Plugin Name: WPC Name Your Price for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Name Your Price lets customers pay with what price they want.
-Version: 2.2.1
+Version: 2.2.2
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
@@ -12,14 +12,14 @@ Requires Plugins: woocommerce
 Requires at least: 4.0
 Tested up to: 6.9
 WC requires at least: 3.0
-WC tested up to: 10.3
+WC tested up to: 10.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.1' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.2' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,7 @@ defined( 'ABSPATH' ) || exit;
 ! defined( 'WOONP_DISCUSSION' ) && define( 'WOONP_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-name-your-price' );
 ! defined( 'WPC_URI' ) && define( 'WPC_URI', WOONP_URI );
 
+include 'includes/log/wpc-log.php';
 include 'includes/dashboard/wpc-dashboard.php';
 include 'includes/kit/wpc-kit.php';
 include 'includes/hpos.php';
@@ -70,6 +71,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
 
                     // settings page
                     add_action( 'admin_init', [ $this, 'register_settings' ] );
+                    add_filter( 'pre_update_option', [ $this, 'last_saved' ], 10, 2 );
                     add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
                     // settings link
@@ -109,6 +111,15 @@ if ( ! function_exists( 'woonp_init' ) ) {
                             'type'              => 'array',
                             'sanitize_callback' => [ $this, 'sanitize_array' ],
                     ] );
+                }
+
+                function last_saved( $value, $option ) {
+                    if ( $option == 'woonp_settings' ) {
+                        $value['_last_saved']    = current_time( 'timestamp' );
+                        $value['_last_saved_by'] = get_current_user_id();
+                    }
+
+                    return $value;
                 }
 
                 function admin_menu() {
@@ -303,7 +314,16 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                         </tr>
                                         <tr class="submit">
                                             <th colspan="2">
-                                                <?php settings_fields( 'woonp_settings' ); ?><?php submit_button(); ?>
+                                                <div class="wpclever_submit">
+                                                    <?php
+                                                    settings_fields( 'woonp_settings' );
+                                                    submit_button( '', 'primary', 'submit', false );
+
+                                                    if ( function_exists( 'wpc_last_saved' ) ) {
+                                                        wpc_last_saved( WoonpHelper::get_settings() );
+                                                    }
+                                                    ?>
+                                                </div>
                                                 <a style="display: none;" class="wpclever_export"
                                                    data-key="woonp_settings"
                                                    data-name="settings"
