@@ -3,23 +3,23 @@
 Plugin Name: WPC Name Your Price for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Name Your Price lets customers pay with what price they want.
-Version: 2.2.3
+Version: 2.2.4
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Requires at least: 4.0
-Tested up to: 6.9
+Requires at least: 5.9
+Tested up to: 7.0
 WC requires at least: 3.0
-WC tested up to: 10.7
+WC tested up to: 10.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.3' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.4' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
@@ -63,7 +63,6 @@ if ( ! function_exists( 'woonp_init' ) ) {
 
                 function __construct() {
                     // init
-                    add_action( 'init', [ $this, 'init' ] );
 
                     // enqueue backend
                     add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
@@ -85,12 +84,6 @@ if ( ! function_exists( 'woonp_init' ) ) {
                     add_action( 'woocommerce_product_data_panels', [ $this, 'product_data_panels' ] );
                     add_action( 'woocommerce_process_product_meta', [ $this, 'process_product_meta' ] );
                 }
-
-                function init() {
-                    // load text-domain
-                    load_plugin_textdomain( 'wpc-name-your-price', false, basename( WOONP_DIR ) . '/languages/' );
-                }
-
                 function admin_enqueue_scripts() {
                     wp_enqueue_style( 'woonp-backend', WOONP_URI . 'assets/css/backend.css', [], WOONP_VERSION );
                     wp_enqueue_script( 'woonp-backend', WOONP_URI . 'assets/js/backend.js', [ 'jquery' ], WOONP_VERSION, true );
@@ -133,7 +126,8 @@ if ( ! function_exists( 'woonp_init' ) ) {
                 }
 
                 function admin_menu_content() {
-                    $active_tab = $_GET['tab'] ?? 'settings';
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: used only to render the active tab UI, no data is modified.
+                    $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'settings';
                     ?>
                     <div class="wpclever_settings_page wrap">
                         <div class="wpclever_settings_page_header">
@@ -159,7 +153,8 @@ if ( ! function_exists( 'woonp_init' ) ) {
                             </div>
                         </div>
                         <h2></h2>
-                        <?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
+                        <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WordPress core appends 'settings-updated' after options.php processes the form; nonce is already verified by the Settings API.
+                        if ( isset( $_GET['settings-updated'] ) && sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) ) { ?>
                             <div class="notice notice-success is-dismissible">
                                 <p><?php esc_html_e( 'Settings updated.', 'wpc-name-your-price' ); ?></p>
                             </div>
@@ -513,29 +508,31 @@ if ( ! function_exists( 'woonp_init' ) ) {
                 }
 
                 function process_product_meta( $post_id ) {
+                    // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce is already verified by WooCommerce core via 'woocommerce_process_product_meta' hook (edit_post capability check + nonce).
                     if ( isset( $_POST['_woonp_status'] ) ) {
-                        update_post_meta( $post_id, '_woonp_status', sanitize_text_field( $_POST['_woonp_status'] ) );
+                        update_post_meta( $post_id, '_woonp_status', sanitize_text_field( wp_unslash( $_POST['_woonp_status'] ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_type'] ) ) {
-                        update_post_meta( $post_id, '_woonp_type', sanitize_text_field( $_POST['_woonp_type'] ) );
+                        update_post_meta( $post_id, '_woonp_type', sanitize_text_field( wp_unslash( $_POST['_woonp_type'] ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_min'] ) ) {
-                        update_post_meta( $post_id, '_woonp_min', sanitize_text_field( $_POST['_woonp_min'] ) );
+                        update_post_meta( $post_id, '_woonp_min', sanitize_text_field( wp_unslash( $_POST['_woonp_min'] ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_max'] ) ) {
-                        update_post_meta( $post_id, '_woonp_max', sanitize_text_field( $_POST['_woonp_max'] ) );
+                        update_post_meta( $post_id, '_woonp_max', sanitize_text_field( wp_unslash( $_POST['_woonp_max'] ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_step'] ) ) {
-                        update_post_meta( $post_id, '_woonp_step', sanitize_text_field( $_POST['_woonp_step'] ) );
+                        update_post_meta( $post_id, '_woonp_step', sanitize_text_field( wp_unslash( $_POST['_woonp_step'] ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_values'] ) ) {
-                        update_post_meta( $post_id, '_woonp_values', sanitize_textarea_field( $_POST['_woonp_values'] ) );
+                        update_post_meta( $post_id, '_woonp_values', sanitize_textarea_field( wp_unslash( $_POST['_woonp_values'] ) ) );
                     }
+                    // phpcs:enable WordPress.Security.NonceVerification.Missing
                 }
 
                 public static function get_values( $values ) {

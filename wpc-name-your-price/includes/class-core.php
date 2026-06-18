@@ -26,8 +26,11 @@ class WoonpCore {
 	}
 
 	public function add_to_cart_item_data( $cart_item_data ) {
-		if ( isset( $_REQUEST['woonp'] ) ) {
-			$cart_item_data['woonp'] = self::sanitize_price( $_REQUEST['woonp'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$woonp_price = filter_input( INPUT_POST, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+
+		if ( null !== $woonp_price && false !== $woonp_price ) {
+			$cart_item_data['woonp'] = self::sanitize_price( $woonp_price );
 			unset( $_REQUEST['woonp'] );
 		}
 
@@ -129,8 +132,11 @@ class WoonpCore {
 				$value = '';
 		}
 
-		if ( is_product() && isset( $_REQUEST['woonp'] ) ) {
-			$value = self::sanitize_price( $_REQUEST['woonp'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$woonp_request = filter_input( INPUT_GET, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+
+		if ( is_product() && null !== $woonp_request && false !== $woonp_request ) {
+			$value = self::sanitize_price( $woonp_request );
 		}
 
 		$input_id    = 'woonp_' . $product_id;
@@ -144,27 +150,36 @@ class WoonpCore {
 			$select = '<select id="' . esc_attr( $input_id ) . '" class="woonp-select" name="woonp">';
 
 			foreach ( $values as $v ) {
-				$select .= '<option value="' . esc_attr( $v['value'] ) . '" ' . ( $value == $v['value'] ? 'selected' : '' ) . '>' . $v['name'] . '</option>';
+				$select .= '<option value="' . esc_attr( $v['value'] ) . '" ' . ( $value == $v['value'] ? 'selected' : '' ) . '>' . esc_html( $v['name'] ) . '</option>';
 			}
 
 			$select .= '</select>';
 
+			// All dynamic values inside $select are escaped with esc_attr()/esc_html() at point of insertion.
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$price .= apply_filters( 'woonp_input_select', $select, $product );
 		} else {
 			// default
 			$input = '<input type="number" id="' . esc_attr( $input_id ) . '" class="woonp-input" step="' . esc_attr( $step ) . '" min="' . esc_attr( $min ) . '" max="' . esc_attr( 0 < $max ? $max : '' ) . '" name="woonp" value="' . esc_attr( $value ) . '" size="4"/>';
 
+			// All dynamic values inside $input are escaped with esc_attr() at point of insertion.
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$price .= apply_filters( 'woonp_input_number', $input, $product );
 		}
 
 		$price .= '</div>';
 
+		// All dynamic values inside $price are escaped with esc_attr()/esc_html() at point of insertion.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo apply_filters( 'woonp_input', $price, $product );
 	}
 
 	public static function add_to_cart_validation( $passed, $product_id ) {
-		if ( isset( $_REQUEST['woonp'] ) ) {
-			$price = self::sanitize_price( $_REQUEST['woonp'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$woonp_price = filter_input( INPUT_POST, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+
+		if ( null !== $woonp_price && false !== $woonp_price ) {
+			$price = self::sanitize_price( $woonp_price );
 
 			if ( ! self::is_valid_product( $product_id ) ) {
 				wc_add_notice( esc_html__( 'This product does not allow you to name your price.', 'wpc-name-your-price' ), 'error' );
