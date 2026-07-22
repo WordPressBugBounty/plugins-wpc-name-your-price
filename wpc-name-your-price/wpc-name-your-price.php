@@ -3,7 +3,7 @@
 Plugin Name: WPC Name Your Price for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Name Your Price lets customers pay with what price they want.
-Version: 2.2.4
+Version: 2.2.5
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
@@ -12,14 +12,14 @@ Requires Plugins: woocommerce
 Requires at least: 5.9
 Tested up to: 7.0
 WC requires at least: 3.0
-WC tested up to: 10.8
+WC tested up to: 10.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.4' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.5' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
@@ -127,7 +127,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
 
                 function admin_menu_content() {
                     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: used only to render the active tab UI, no data is modified.
-                    $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'settings';
+                    $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ?? '' ) ) : 'settings';
                     ?>
                     <div class="wpclever_settings_page wrap">
                         <div class="wpclever_settings_page_header">
@@ -510,27 +510,27 @@ if ( ! function_exists( 'woonp_init' ) ) {
                 function process_product_meta( $post_id ) {
                     // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce is already verified by WooCommerce core via 'woocommerce_process_product_meta' hook (edit_post capability check + nonce).
                     if ( isset( $_POST['_woonp_status'] ) ) {
-                        update_post_meta( $post_id, '_woonp_status', sanitize_text_field( wp_unslash( $_POST['_woonp_status'] ) ) );
+                        update_post_meta( $post_id, '_woonp_status', sanitize_text_field( wp_unslash( $_POST['_woonp_status'] ?? '' ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_type'] ) ) {
-                        update_post_meta( $post_id, '_woonp_type', sanitize_text_field( wp_unslash( $_POST['_woonp_type'] ) ) );
+                        update_post_meta( $post_id, '_woonp_type', sanitize_text_field( wp_unslash( $_POST['_woonp_type'] ?? '' ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_min'] ) ) {
-                        update_post_meta( $post_id, '_woonp_min', sanitize_text_field( wp_unslash( $_POST['_woonp_min'] ) ) );
+                        update_post_meta( $post_id, '_woonp_min', sanitize_text_field( wp_unslash( $_POST['_woonp_min'] ?? '' ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_max'] ) ) {
-                        update_post_meta( $post_id, '_woonp_max', sanitize_text_field( wp_unslash( $_POST['_woonp_max'] ) ) );
+                        update_post_meta( $post_id, '_woonp_max', sanitize_text_field( wp_unslash( $_POST['_woonp_max'] ?? '' ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_step'] ) ) {
-                        update_post_meta( $post_id, '_woonp_step', sanitize_text_field( wp_unslash( $_POST['_woonp_step'] ) ) );
+                        update_post_meta( $post_id, '_woonp_step', sanitize_text_field( wp_unslash( $_POST['_woonp_step'] ?? '' ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_values'] ) ) {
-                        update_post_meta( $post_id, '_woonp_values', sanitize_textarea_field( wp_unslash( $_POST['_woonp_values'] ) ) );
+                        update_post_meta( $post_id, '_woonp_values', sanitize_textarea_field( wp_unslash( $_POST['_woonp_values'] ?? '' ) ) );
                     }
                     // phpcs:enable WordPress.Security.NonceVerification.Missing
                 }

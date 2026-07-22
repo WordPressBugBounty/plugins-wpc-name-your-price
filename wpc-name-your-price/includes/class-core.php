@@ -193,18 +193,23 @@ class WoonpCore {
 				return false;
 			} else {
 				$status = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
+				$type   = $values = '';
 				$min    = $max = 0;
 				$step   = 1;
 
 				if ( $status === 'overwrite' ) {
-					$min  = (float) get_post_meta( $product_id, '_woonp_min', true );
-					$max  = (float) get_post_meta( $product_id, '_woonp_max', true );
-					$step = (float) ( get_post_meta( $product_id, '_woonp_step', true ) ?: 1 );
+					$type   = get_post_meta( $product_id, '_woonp_type', true );
+					$min    = (float) get_post_meta( $product_id, '_woonp_min', true );
+					$max    = (float) get_post_meta( $product_id, '_woonp_max', true );
+					$step   = (float) ( get_post_meta( $product_id, '_woonp_step', true ) ?: 1 );
+					$values = get_post_meta( $product_id, '_woonp_values', true );
 				} elseif ( $status === 'default' ) {
 					$status = WoonpHelper::get_setting( 'global_status', 'enable' );
+					$type   = WoonpHelper::get_setting( 'type', 'default' );
 					$min    = (float) WoonpHelper::get_setting( 'min' );
 					$max    = (float) WoonpHelper::get_setting( 'max' );
 					$step   = (float) ( WoonpHelper::get_setting( 'step' ) ?: 1 );
+					$values = WoonpHelper::get_setting( 'values' );
 				}
 
 				if ( $step <= 0 ) {
@@ -212,13 +217,35 @@ class WoonpCore {
 				}
 
 				if ( $status !== 'disable' ) {
-					$pow = pow( 10, strlen( (string) $step ) );
-					$mod = ( ( $price * $pow ) - ( $min * $pow ) ) / ( $step * $pow );
+					if ( $type === 'select' ) {
+						// Validate for select type
+						if ( class_exists( 'WPCleverWoonp' ) ) {
+							$values_list = WPCleverWoonp::get_values( $values );
 
-					if ( ( $min && ( $price < $min ) ) || ( $max && ( $price > $max ) ) || ( $mod != intval( $mod ) ) ) {
-						wc_add_notice( esc_html__( 'Invalid price. Please try again!', 'wpc-name-your-price' ), 'error' );
+							if ( ! empty( $values_list ) ) {
+								$valid_prices = [];
 
-						return false;
+								foreach ( $values_list as $v ) {
+									$valid_prices[] = (float) $v['value'];
+								}
+
+								if ( ! in_array( (float) $price, $valid_prices, true ) ) {
+									wc_add_notice( esc_html__( 'Invalid price. Please try again!', 'wpc-name-your-price' ), 'error' );
+
+									return false;
+								}
+							}
+						}
+					} else {
+						// Validate for default/number input type
+						$pow = pow( 10, strlen( (string) $step ) );
+						$mod = ( ( $price * $pow ) - ( $min * $pow ) ) / ( $step * $pow );
+
+						if ( ( $min && ( $price < $min ) ) || ( $max && ( $price > $max ) ) || ( $mod != intval( $mod ) ) ) {
+							wc_add_notice( esc_html__( 'Invalid price. Please try again!', 'wpc-name-your-price' ), 'error' );
+
+							return false;
+						}
 					}
 				}
 			}
