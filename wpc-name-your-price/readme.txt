@@ -2,9 +2,8 @@
 Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, name price, open price, custom price
-Tested up to: 7.0
-Version: 2.2.5
-Stable tag: 2.2.5
+Tested up to: 7.1
+Stable tag: 2.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +56,9 @@ Please try other plugins from us:
 4. Go to WPClever > Name Your Price to make your customization
 
 == Changelog ==
+
+= 2.2.6 =
+* Updated: Compatible with WP 7.1 & Woo 11.1
 
 = 2.2.5 =
 * Fixed: Security issue reported by Muni Nitish Kumar Yaddala
