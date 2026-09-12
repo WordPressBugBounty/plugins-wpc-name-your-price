@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPC Name Your Price for WooCommerce 2.2.6\n"
+"Project-Id-Version: WPC Name Your Price for WooCommerce 2.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-name-your-price\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-11T03:08:07+00:00\n"
+"POT-Creation-Date: 2026-09-12T02:56:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wpc-name-your-price\n"
@@ -40,29 +40,29 @@ msgid "https://wpclever.net"
 msgstr ""
 
 #. translators: price
-#: includes/class-core.php:57
+#: includes/class-core.php:55
 #: wpc-name-your-price.php:205
 #, php-format
 msgid "Suggested Price: %s"
 msgstr ""
 
 #. translators: currency
-#: includes/class-core.php:143
+#: includes/class-core.php:139
 #: wpc-name-your-price.php:241
 #, php-format
 msgid "Name Your Price (%s) "
 msgstr ""
 
-#: includes/class-core.php:185
+#: includes/class-core.php:179
 msgid "This product does not allow you to name your price."
 msgstr ""
 
-#: includes/class-core.php:191
+#: includes/class-core.php:185
 msgid "You can't fill the negative price."
 msgstr ""
 
-#: includes/class-core.php:233
-#: includes/class-core.php:245
+#: includes/class-core.php:227
+#: includes/class-core.php:243
 msgid "Invalid price. Please try again!"
 msgstr ""
 

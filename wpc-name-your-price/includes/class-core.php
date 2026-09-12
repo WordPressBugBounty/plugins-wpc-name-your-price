@@ -27,10 +27,8 @@ class WoonpCore {
 
 	public function add_to_cart_item_data( $cart_item_data ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$woonp_price = filter_input( INPUT_POST, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
-
-		if ( null !== $woonp_price && false !== $woonp_price ) {
-			$cart_item_data['woonp'] = self::sanitize_price( $woonp_price );
+		if ( isset( $_POST['woonp'] ) && '' !== $_POST['woonp'] ) {
+			$cart_item_data['woonp'] = self::sanitize_price( wp_unslash( $_POST['woonp'] ) );
 			unset( $_REQUEST['woonp'] );
 		}
 
@@ -104,17 +102,17 @@ class WoonpCore {
 
 		if ( $status === 'overwrite' ) {
 			$type   = get_post_meta( $product_id, '_woonp_type', true );
-			$min    = get_post_meta( $product_id, '_woonp_min', true );
-			$max    = get_post_meta( $product_id, '_woonp_max', true );
-			$step   = get_post_meta( $product_id, '_woonp_step', true );
+			$min    = str_replace( ',', '.', get_post_meta( $product_id, '_woonp_min', true ) );
+			$max    = str_replace( ',', '.', get_post_meta( $product_id, '_woonp_max', true ) );
+			$step   = str_replace( ',', '.', get_post_meta( $product_id, '_woonp_step', true ) );
 			$values = get_post_meta( $product_id, '_woonp_values', true );
 		}
 
 		if ( $status === 'default' ) {
 			$type   = WoonpHelper::get_setting( 'type', 'default' );
-			$min    = WoonpHelper::get_setting( 'min' );
-			$max    = WoonpHelper::get_setting( 'max' );
-			$step   = WoonpHelper::get_setting( 'step' );
+			$min    = str_replace( ',', '.', WoonpHelper::get_setting( 'min' ) );
+			$max    = str_replace( ',', '.', WoonpHelper::get_setting( 'max' ) );
+			$step   = str_replace( ',', '.', WoonpHelper::get_setting( 'step' ) );
 			$values = WoonpHelper::get_setting( 'values' );
 		}
 
@@ -133,10 +131,8 @@ class WoonpCore {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$woonp_request = filter_input( INPUT_GET, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
-
-		if ( is_product() && null !== $woonp_request && false !== $woonp_request ) {
-			$value = self::sanitize_price( $woonp_request );
+		if ( is_product() && isset( $_GET['woonp'] ) && '' !== $_GET['woonp'] ) {
+			$value = self::sanitize_price( wp_unslash( $_GET['woonp'] ) );
 		}
 
 		$input_id    = 'woonp_' . $product_id;
@@ -176,10 +172,8 @@ class WoonpCore {
 
 	public static function add_to_cart_validation( $passed, $product_id ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$woonp_price = filter_input( INPUT_POST, 'woonp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
-
-		if ( null !== $woonp_price && false !== $woonp_price ) {
-			$price = self::sanitize_price( $woonp_price );
+		if ( isset( $_POST['woonp'] ) && '' !== $_POST['woonp'] ) {
+			$price = (float) self::sanitize_price( wp_unslash( $_POST['woonp'] ) );
 
 			if ( ! self::is_valid_product( $product_id ) ) {
 				wc_add_notice( esc_html__( 'This product does not allow you to name your price.', 'wpc-name-your-price' ), 'error' );
@@ -199,16 +193,16 @@ class WoonpCore {
 
 				if ( $status === 'overwrite' ) {
 					$type   = get_post_meta( $product_id, '_woonp_type', true );
-					$min    = (float) get_post_meta( $product_id, '_woonp_min', true );
-					$max    = (float) get_post_meta( $product_id, '_woonp_max', true );
-					$step   = (float) ( get_post_meta( $product_id, '_woonp_step', true ) ?: 1 );
+					$min    = (float) str_replace( ',', '.', get_post_meta( $product_id, '_woonp_min', true ) );
+					$max    = (float) str_replace( ',', '.', get_post_meta( $product_id, '_woonp_max', true ) );
+					$step   = (float) str_replace( ',', '.', get_post_meta( $product_id, '_woonp_step', true ) ?: 1 );
 					$values = get_post_meta( $product_id, '_woonp_values', true );
 				} elseif ( $status === 'default' ) {
 					$status = WoonpHelper::get_setting( 'global_status', 'enable' );
 					$type   = WoonpHelper::get_setting( 'type', 'default' );
-					$min    = (float) WoonpHelper::get_setting( 'min' );
-					$max    = (float) WoonpHelper::get_setting( 'max' );
-					$step   = (float) ( WoonpHelper::get_setting( 'step' ) ?: 1 );
+					$min    = (float) str_replace( ',', '.', WoonpHelper::get_setting( 'min' ) );
+					$max    = (float) str_replace( ',', '.', WoonpHelper::get_setting( 'max' ) );
+					$step   = (float) str_replace( ',', '.', WoonpHelper::get_setting( 'step' ) ?: 1 );
 					$values = WoonpHelper::get_setting( 'values' );
 				}
 
@@ -238,10 +232,14 @@ class WoonpCore {
 						}
 					} else {
 						// Validate for default/number input type
-						$pow = pow( 10, strlen( (string) $step ) );
-						$mod = ( ( $price * $pow ) - ( $min * $pow ) ) / ( $step * $pow );
+						$step_valid = true;
 
-						if ( ( $min && ( $price < $min ) ) || ( $max && ( $price > $max ) ) || ( $mod != intval( $mod ) ) ) {
+						if ( $step > 0 ) {
+							$ratio      = ( $price - $min ) / $step;
+							$step_valid = abs( $ratio - round( $ratio ) ) < 0.0001;
+						}
+
+						if ( ( $min && ( $price < $min ) ) || ( $max && ( $price > $max ) ) || ! $step_valid ) {
 							wc_add_notice( esc_html__( 'Invalid price. Please try again!', 'wpc-name-your-price' ), 'error' );
 
 							return false;
@@ -255,7 +253,9 @@ class WoonpCore {
 	}
 
 	public static function sanitize_price( $price ) {
-		return filter_var( sanitize_text_field( $price ), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+		$price = str_replace( ',', '.', sanitize_text_field( (string) $price ) );
+
+		return filter_var( $price, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
 	}
 }
 

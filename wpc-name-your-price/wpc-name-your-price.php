@@ -8,7 +8,7 @@ Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Version: 2.2.6
+Version: 2.3.0
 Requires at least: 5.9
 WC requires at least: 3.0
 WC tested up to: 11.1
@@ -18,7 +18,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.2.6' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.3.0' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
@@ -269,7 +269,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                                 <label>
                                                     <input type="number" name="woonp_settings[min]" min="0"
                                                            step="<?php echo esc_attr( $step ); ?>"
-                                                           value="<?php echo esc_attr( WoonpHelper::get_setting( 'min' ) ); ?>"/>
+                                                           value="<?php echo esc_attr( str_replace( ',', '.', WoonpHelper::get_setting( 'min' ) ) ); ?>"/>
                                                 </label>
                                                 <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                             </td>
@@ -280,7 +280,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                                 <label>
                                                     <input type="number" name="woonp_settings[step]" min="0"
                                                            step="<?php echo esc_attr( $step ); ?>"
-                                                           value="<?php echo esc_attr( WoonpHelper::get_setting( 'step' ) ); ?>"/>
+                                                           value="<?php echo esc_attr( str_replace( ',', '.', WoonpHelper::get_setting( 'step' ) ) ); ?>"/>
                                                 </label>
                                                 <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                             </td>
@@ -291,7 +291,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                                 <label>
                                                     <input type="number" name="woonp_settings[max]" min="0"
                                                            step="<?php echo esc_attr( $step ); ?>"
-                                                           value="<?php echo esc_attr( WoonpHelper::get_setting( 'max' ) ); ?>"/>
+                                                           value="<?php echo esc_attr( str_replace( ',', '.', WoonpHelper::get_setting( 'max' ) ) ); ?>"/>
                                                 </label>
                                                 <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                             </td>
@@ -461,7 +461,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                     <label>
                                         <input type="number" name="_woonp_min" min="0" style="width: 120px"
                                                step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( get_post_meta( $product_id, '_woonp_min', true ) ); ?>"/>
+                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_min', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -472,7 +472,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                     <label>
                                         <input type="number" name="_woonp_step" min="0" style="width: 120px"
                                                step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( get_post_meta( $product_id, '_woonp_step', true ) ); ?>"/>
+                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_step', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -483,7 +483,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                     <label>
                                         <input type="number" name="_woonp_max" min="0" style="width: 120px"
                                                step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( get_post_meta( $product_id, '_woonp_max', true ) ); ?>"/>
+                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_max', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -517,15 +517,15 @@ if ( ! function_exists( 'woonp_init' ) ) {
                     }
 
                     if ( isset( $_POST['_woonp_min'] ) ) {
-                        update_post_meta( $post_id, '_woonp_min', sanitize_text_field( wp_unslash( $_POST['_woonp_min'] ?? '' ) ) );
+                        update_post_meta( $post_id, '_woonp_min', str_replace( ',', '.', sanitize_text_field( wp_unslash( $_POST['_woonp_min'] ?? '' ) ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_max'] ) ) {
-                        update_post_meta( $post_id, '_woonp_max', sanitize_text_field( wp_unslash( $_POST['_woonp_max'] ?? '' ) ) );
+                        update_post_meta( $post_id, '_woonp_max', str_replace( ',', '.', sanitize_text_field( wp_unslash( $_POST['_woonp_max'] ?? '' ) ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_step'] ) ) {
-                        update_post_meta( $post_id, '_woonp_step', sanitize_text_field( wp_unslash( $_POST['_woonp_step'] ?? '' ) ) );
+                        update_post_meta( $post_id, '_woonp_step', str_replace( ',', '.', sanitize_text_field( wp_unslash( $_POST['_woonp_step'] ?? '' ) ) ) );
                     }
 
                     if ( isset( $_POST['_woonp_values'] ) ) {
@@ -587,7 +587,13 @@ if ( ! function_exists( 'woonp_init' ) ) {
                         if ( is_array( $v ) ) {
                             $arr[ $k ] = self::sanitize_array( $v );
                         } else {
-                            $arr[ $k ] = sanitize_post_field( 'post_content', $v, 0, 'db' );
+                            $val = sanitize_post_field( 'post_content', $v, 0, 'db' );
+
+                            if ( in_array( $k, [ 'min', 'max', 'step' ], true ) ) {
+                                $val = str_replace( ',', '.', $val );
+                            }
+
+                            $arr[ $k ] = $val;
                         }
                     }
 
