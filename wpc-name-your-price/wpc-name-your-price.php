@@ -8,17 +8,17 @@ Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Version: 2.3.0
+Version: 2.3.1
 Requires at least: 5.9
 WC requires at least: 3.0
-WC tested up to: 11.1
+WC tested up to: 11.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.3.0' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.3.1' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
