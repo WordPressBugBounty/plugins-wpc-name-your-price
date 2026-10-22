@@ -2,31 +2,28 @@
 
 (function($) {
   $(function() {
-    woonp_status();
     woonp_type();
-    woonp_type_single();
+    woonp_forms();
   });
 
-  $(document).on('change', 'input[name="_woonp_status"]', function() {
-    woonp_status();
+  // Variations are loaded via ajax
+  $('#woocommerce-product-data').on('woocommerce_variations_loaded', function() {
+    woonp_forms();
+  });
+
+  $(document).on('change', '.woonp_status_input, .woonp_status_select', function() {
+    woonp_forms($(this).closest('.woonp_settings_form'));
   });
 
   $(document).on('change', '.woonp_type', function() {
     woonp_type();
   });
 
-  $(document).on('change', 'select[name="_woonp_type"]', function() {
-    woonp_type_single();
+  $(document).on('change', 'select.woonp_type_single', function() {
+    woonp_forms($(this).closest('.woonp_settings_form'));
   });
 
-  function woonp_status() {
-    if ($('input[name="_woonp_status"]:checked').val() === 'overwrite') {
-      $('div.woonp_show_if_overwrite').show();
-    } else {
-      $('div.woonp_show_if_overwrite').hide();
-    }
-  }
-
+  // Global settings page
   function woonp_type() {
     if ($('.woonp_type').val() === 'select') {
       $('tr.woonp_show_if_type_input').css('display', 'none');
@@ -37,13 +34,32 @@
     }
   }
 
-  function woonp_type_single() {
-    if ($('select[name="_woonp_type"]').val() === 'select') {
-      $('div.woonp_show_if_type_input').css('display', 'none');
-      $('div.woonp_show_if_type_select').css('display', 'flex');
-    } else {
-      $('div.woonp_show_if_type_select').css('display', 'none');
-      $('div.woonp_show_if_type_input').css('display', 'flex');
-    }
+  // Product & variation settings, each form is handled on its own
+  function woonp_forms($context) {
+    $context = $context || $(document);
+
+    $context.find('.woonp_settings_form').addBack('.woonp_settings_form').
+        each(function() {
+          var $form = $(this);
+          var status = $form.find('.woonp_status_input:checked').val() ||
+              $form.find('.woonp_status_select').val();
+          var type = $form.find('select.woonp_type_single').val();
+
+          if (status === 'overwrite') {
+            $form.find('div.woonp_show_if_overwrite').show();
+          } else {
+            $form.find('div.woonp_show_if_overwrite').hide();
+          }
+
+          if (type === 'select') {
+            $form.find('div.woonp_show_if_type_input').css('display', 'none');
+            $form.find('div.woonp_show_if_type_select').
+                css('display', 'flex');
+          } else {
+            $form.find('div.woonp_show_if_type_select').
+                css('display', 'none');
+            $form.find('div.woonp_show_if_type_input').css('display', 'flex');
+          }
+        });
   }
 })(jQuery);

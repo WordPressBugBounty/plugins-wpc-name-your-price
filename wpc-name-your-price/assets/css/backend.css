@@ -19,6 +19,7 @@
 .woonp_table label {
     float: none !important;
     margin-left: 0 !important;
+    margin-right: 10px !important;
     width: auto !important;
 }
 
@@ -33,4 +34,54 @@
 
 .woonp_tab a:before {
     content: '\f529' !important;
+}
+
+.woonp_table input[type="number"] {
+    width: 120px;
+}
+
+.woonp_table textarea {
+    float: none;
+    width: 100%;
+    height: 200px;
+}
+
+.woonp_table .description {
+    margin-left: 0;
+}
+
+.woonp-variation-settings {
+    margin: 1em 0;
+}
+
+.woonp-variation-wrap {
+    margin-top: 10px;
+    padding: 0 12px;
+    background-color: #fafafa;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    position: relative;
+}
+
+.woonp-variation-wrap:before {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: #fafafa;
+    border-width: 1px 0 0 1px;
+    border-style: solid;
+    border-color: #8c8f94;
+    transform: rotate(45deg);
+    position: absolute;
+    top: -6px;
+    left: 15px;
+}
+
+.wpclever_settings_page_nav .nav-tab.woonp-premium-tab {
+    color: #c9356e;
+}
+
+.woonp-premium-features {
+    margin-bottom: 0;
 }

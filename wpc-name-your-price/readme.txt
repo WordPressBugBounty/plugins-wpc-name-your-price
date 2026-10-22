@@ -3,7 +3,7 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, name price, open price, custom price
 Tested up to: 7.1
-Stable tag: 2.3.1
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,7 +15,7 @@ A simple plugin for enabling open pricing and letting your customers request a p
 
 = Live demo =
 
-Visit our [live demo](https://demo.wpclever.net/woonp/ "live demo") here to see how this plugin works.
+Visit our [live demo](https://demo.wpclever.net/woosw/product/premium-quality-2/ "live demo") here to see how this plugin works.
 
 = Features =
 
@@ -56,6 +56,10 @@ Please try other plugins from us:
 4. Go to WPClever > Name Your Price to make your customization
 
 == Changelog ==
+
+= 3.0.0 =
+* Updated: Optimized the code
+* Updated: Compatible with WP 7.1 & Woo 11.2
 
 = 2.3.1 =
 * Updated: Minor CSS/JS issues in the backend

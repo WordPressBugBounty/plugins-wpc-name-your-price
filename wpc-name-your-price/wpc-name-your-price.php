@@ -8,7 +8,7 @@ Author URI: https://wpclever.net
 Text Domain: wpc-name-your-price
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Version: 2.3.1
+Version: 3.0.0
 Requires at least: 5.9
 WC requires at least: 3.0
 WC tested up to: 11.2
@@ -18,7 +18,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '2.3.1' );
+! defined( 'WOONP_VERSION' ) && define( 'WOONP_VERSION', '3.0.0' );
 ! defined( 'WOONP_LITE' ) && define( 'WOONP_LITE', __FILE__ );
 ! defined( 'WOONP_FILE' ) && define( 'WOONP_FILE', __FILE__ );
 ! defined( 'WOONP_URI' ) && define( 'WOONP_URI', plugin_dir_url( __FILE__ ) );
@@ -82,7 +82,14 @@ if ( ! function_exists( 'woonp_init' ) ) {
                     add_filter( 'woocommerce_product_data_tabs', [ $this, 'product_data_tabs' ] );
                     add_action( 'woocommerce_product_data_panels', [ $this, 'product_data_panels' ] );
                     add_action( 'woocommerce_process_product_meta', [ $this, 'process_product_meta' ] );
+
+                    // variation settings
+                    add_action( 'woocommerce_product_after_variable_attributes', [
+                            $this,
+                            'variation_settings'
+                    ], 99, 3 );
                 }
+
                 function admin_enqueue_scripts() {
                     wp_enqueue_style( 'woonp-backend', WOONP_URI . 'assets/css/backend.css', [], WOONP_VERSION );
                     wp_enqueue_script( 'woonp-backend', WOONP_URI . 'assets/js/backend.js', [ 'jquery' ], WOONP_VERSION, true );
@@ -163,6 +170,10 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=settings' ) ); ?>"
                                    class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
                                     <?php esc_html_e( 'Settings', 'wpc-name-your-price' ); ?>
+                                </a>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=premium' ) ); ?>"
+                                   class="<?php echo esc_attr( $active_tab === 'premium' ? 'nav-tab nav-tab-active woonp-premium-tab' : 'nav-tab woonp-premium-tab' ); ?>">
+                                    <?php esc_html_e( 'Premium Version', 'wpc-name-your-price' ); ?>
                                 </a>
                                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>"
                                    class="nav-tab">
@@ -329,6 +340,20 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                     </table>
                                 </form>
                             <?php } ?>
+                            <?php if ( $active_tab === 'premium' ) { ?>
+                                <div class="wpclever_settings_page_content_text">
+                                    <p>
+                                        Get the Premium Version just $29!
+                                        <a href="https://wpclever.net/downloads/name-your-price/?utm_source=pro&utm_medium=woonp&utm_campaign=wporg"
+                                           target="_blank">https://wpclever.net/downloads/name-your-price/</a>
+                                    </p>
+                                    <p><strong>Extra features for Premium Version:</strong></p>
+                                    <ul class="woonp-premium-features">
+                                        <li>- Configure Name Your Price settings for each variation.</li>
+                                        <li>- Get the lifetime update &amp; premium support.</li>
+                                    </ul>
+                                </div>
+                            <?php } ?>
                         </div><!-- /.wpclever_settings_page_content -->
                         <div class="wpclever_settings_page_suggestion">
                             <div class="wpclever_settings_page_suggestion_label">
@@ -363,6 +388,7 @@ if ( ! function_exists( 'woonp_init' ) ) {
 
                     if ( $plugin === $file ) {
                         $settings = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=settings' ) ) . '">' . esc_html__( 'Settings', 'wpc-name-your-price' ) . '</a>';
+                        $links['wpc-premium'] = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=premium' ) ) . '">' . esc_html__( 'Premium Version', 'wpc-name-your-price' ) . '</a>';
                         array_unshift( $links, $settings );
                     }
 
@@ -418,28 +444,39 @@ if ( ! function_exists( 'woonp_init' ) ) {
                         return;
                     }
 
-                    $step  = '0.0001';
-                    $price = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
-                    $type  = get_post_meta( $product_id, '_woonp_type', true ) ?: 'default';
+                    self::product_settings( $product_id );
+                }
+
+                /**
+                 * Render the settings of a product.
+                 *
+                 * @param int $product_id Product ID.
+                 */
+                public static function product_settings( $product_id ) {
+                    $step   = '0.0001';
+                    $id     = 'woonp_settings';
+                    $css    = 'panel woocommerce_options_panel woonp_table woonp_settings_form';
+                    $status = get_post_meta( $product_id, '_woonp_status', true ) ?: 'default';
+                    $type   = get_post_meta( $product_id, '_woonp_type', true ) ?: 'default';
                     ?>
-                    <div id='woonp_settings' class='panel woocommerce_options_panel woonp_table'>
+                    <div id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $css ); ?>">
                         <div class="woonp_tr">
                             <div class="woonp_td"><?php esc_html_e( 'Name Your Price', 'wpc-name-your-price' ); ?></div>
                             <div class="woonp_td">
                                 <div class="woonp_active">
                                     <label>
-                                        <input name="_woonp_status" type="radio"
-                                               value="default" <?php echo esc_attr( $price === 'default' ? 'checked' : '' ); ?>/>
+                                        <input name="_woonp_status" type="radio" class="woonp_status_input"
+                                               value="default" <?php checked( $status, 'default' ); ?>/>
                                         <?php esc_html_e( 'Default', 'wpc-name-your-price' ); ?>
                                         (<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=settings' ) ); ?>"
                                             target="_blank"><?php esc_html_e( 'settings', 'wpc-name-your-price' ); ?></a>)
                                     </label> <label>
-                                        <input name="_woonp_status" type="radio"
-                                               value="disable" <?php echo esc_attr( $price === 'disable' ? 'checked' : '' ); ?>/>
+                                        <input name="_woonp_status" type="radio" class="woonp_status_input"
+                                               value="disable" <?php checked( $status, 'disable' ); ?>/>
                                         <?php esc_html_e( 'Disable', 'wpc-name-your-price' ); ?>
                                     </label> <label>
-                                        <input name="_woonp_status" type="radio"
-                                               value="overwrite" <?php echo esc_attr( $price === 'overwrite' ? 'checked' : '' ); ?>/>
+                                        <input name="_woonp_status" type="radio" class="woonp_status_input"
+                                               value="overwrite" <?php checked( $status, 'overwrite' ); ?>/>
                                         <?php esc_html_e( 'Overwrite', 'wpc-name-your-price' ); ?>
                                     </label>
                                 </div>
@@ -449,9 +486,10 @@ if ( ! function_exists( 'woonp_init' ) ) {
                             <div class="woonp_tr">
                                 <div class="woonp_td"><?php esc_html_e( 'Type', 'wpc-name-your-price' ); ?></div>
                                 <div class="woonp_td">
-                                    <label> <select name="_woonp_type">
-                                            <option value="default" <?php echo esc_attr( $type === 'default' ? 'selected' : '' ); ?>><?php esc_html_e( 'Input (default)', 'wpc-name-your-price' ); ?></option>
-                                            <option value="select" <?php echo esc_attr( $type === 'select' ? 'selected' : '' ); ?>><?php esc_html_e( 'Select', 'wpc-name-your-price' ); ?></option>
+                                    <label> <select name="_woonp_type"
+                                                    class="woonp_type_single">
+                                            <option value="default" <?php selected( $type, 'default' ); ?>><?php esc_html_e( 'Input (default)', 'wpc-name-your-price' ); ?></option>
+                                            <option value="select" <?php selected( $type, 'select' ); ?>><?php esc_html_e( 'Select', 'wpc-name-your-price' ); ?></option>
                                         </select> </label>
                                 </div>
                             </div>
@@ -459,9 +497,9 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                 <div class="woonp_td"><?php esc_html_e( 'Minimum', 'wpc-name-your-price' ); ?></div>
                                 <div class="woonp_td">
                                     <label>
-                                        <input type="number" name="_woonp_min" min="0" style="width: 120px"
-                                               step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_min', true ) ) ); ?>"/>
+                                        <input type="number" name="_woonp_min"
+                                               min="0" step="<?php echo esc_attr( $step ); ?>"
+                                               value="<?php echo esc_attr( str_replace( ',', '.', (string) get_post_meta( $product_id, '_woonp_min', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -470,9 +508,9 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                 <div class="woonp_td"><?php esc_html_e( 'Step', 'wpc-name-your-price' ); ?></div>
                                 <div class="woonp_td">
                                     <label>
-                                        <input type="number" name="_woonp_step" min="0" style="width: 120px"
-                                               step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_step', true ) ) ); ?>"/>
+                                        <input type="number" name="_woonp_step"
+                                               min="0" step="<?php echo esc_attr( $step ); ?>"
+                                               value="<?php echo esc_attr( str_replace( ',', '.', (string) get_post_meta( $product_id, '_woonp_step', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -481,9 +519,9 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                 <div class="woonp_td"><?php esc_html_e( 'Maximum', 'wpc-name-your-price' ); ?></div>
                                 <div class="woonp_td">
                                     <label>
-                                        <input type="number" name="_woonp_max" min="0" style="width: 120px"
-                                               step="<?php echo esc_attr( $step ); ?>"
-                                               value="<?php echo esc_attr( str_replace( ',', '.', get_post_meta( $product_id, '_woonp_max', true ) ) ); ?>"/>
+                                        <input type="number" name="_woonp_max"
+                                               min="0" step="<?php echo esc_attr( $step ); ?>"
+                                               value="<?php echo esc_attr( str_replace( ',', '.', (string) get_post_meta( $product_id, '_woonp_max', true ) ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php esc_html_e( 'Leave blank or zero to disable.', 'wpc-name-your-price' ); ?></span>
                                 </div>
@@ -492,15 +530,38 @@ if ( ! function_exists( 'woonp_init' ) ) {
                                 <div class="woonp_td"><?php esc_html_e( 'Values', 'wpc-name-your-price' ); ?></div>
                                 <div class="woonp_td">
                                     <label>
-                                        <textarea name="_woonp_values" rows="10" cols="50"
-                                                  style="float: none; width: 100%; height: 200px"><?php echo esc_textarea( get_post_meta( $product_id, '_woonp_values', true ) ); ?></textarea>
+                                        <textarea name="_woonp_values" rows="10"
+                                                  cols="50"><?php echo esc_textarea( get_post_meta( $product_id, '_woonp_values', true ) ); ?></textarea>
                                     </label>
-                                    <p class="description" style="margin-left: 0">
+                                    <p class="description">
                                         <?php esc_html_e( 'Enter each value in one line and can use the range e.g "10-20".',
                                                 'wpc-name-your-price' ); ?>
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+
+                /**
+                 * Render the variation-level notice.
+                 * Variations always follow their parent in the free version.
+                 *
+                 * @param int $loop Variation loop index.
+                 * @param array $variation_data Variation data.
+                 * @param object $variation Variation post object.
+                 */
+                function variation_settings( $loop, $variation_data, $variation ) {
+                    ?>
+                    <div class="form-row form-row-full woonp-variation-settings">
+                        <label><?php esc_html_e( 'WPC Name Your Price', 'wpc-name-your-price' ); ?></label>
+                        <div class="woonp-variation-wrap woonp-variation-wrap-<?php echo esc_attr( absint( $variation->ID ) ); ?>">
+                            <p class="woonp-variation-notice">
+                                <?php esc_html_e( 'Variations always use the settings of the parent product. Name Your Price settings at a variation basis are only available in the Premium Version.', 'wpc-name-your-price' ); ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-woonp&tab=premium' ) ); ?>"
+                                   target="_blank"><?php esc_html_e( 'Learn more', 'wpc-name-your-price' ); ?></a>
+                            </p>
                         </div>
                     </div>
                     <?php
